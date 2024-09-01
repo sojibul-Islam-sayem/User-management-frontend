@@ -1,10 +1,20 @@
-import { useState } from "react";
+import { data } from "autoprefixer";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Link, useLoaderData } from "react-router-dom";
 import Swal from 'sweetalert2'
 
 const UserDetails = () => {
     const loadUsers = useLoaderData()
     const [users, setUsers] = useState(loadUsers)
+
+useEffect(()=>{
+    axios.get('https://management-server-nu.vercel.app/users')
+    .then(data=>{
+        setUsers(data.data)
+    })
+},[])
+
     const handleDelete = id => {
         console.log(id);
         Swal.fire({
@@ -17,13 +27,8 @@ const UserDetails = () => {
             confirmButtonText: "Yes, delete it!"
         }).then((result) => {
             if (result.isConfirmed) {
-
-                fetch(`https://management-server-nu.vercel.app/users/${id}`, {
-                    method: 'DELETE'
-                })
-                    .then(res => res.json())
+                axios.delete(`https://management-server-nu.vercel.app/users/${id}`)
                     .then(data => {
-                        console.log(data);
                         Swal.fire({
                             title: "Deleted!",
                             text: "Your file has been deleted.",

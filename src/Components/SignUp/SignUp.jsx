@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../Providers/AuthProvider";
 import { Link } from "react-router-dom";
 import Swal from 'sweetalert2'
+import axios from 'axios';
 
 const SignUp = () => {
     const { createUser } = useContext(AuthContext);
@@ -13,7 +14,7 @@ const SignUp = () => {
         const password = form.password.value;
         const gender = form.gender.value;
         const status = form.status.value;
-        
+
 
 
 
@@ -21,26 +22,21 @@ const SignUp = () => {
             .then(user => {
                 console.log(user);
                 console.log('log in success');
-                fetch('https://management-server-nu.vercel.app/users', {
-                    method: "POST",
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                    body: JSON.stringify({ name, email, password, gender, status, user })
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log(data);
-                        if(data.acknowledged == true){
+                axios.post('https://management-server-nu.vercel.app/users', { name, email, password, gender, status, user })
+                    .then(res => {
+                        if (res.data.acknowledged) {
                             Swal.fire({
                                 title: 'Welcome!',
                                 text: 'Do you want to continue',
                                 icon: 'success',
                                 confirmButtonText: 'Cool'
-                              })
+                            });
                         }
-                        form.reset()
+                        form.reset();
                     })
+                    .catch(error => {
+                        console.error(error.message);
+                    });
             })
             .catch(error => {
                 console.log(error.massage);
