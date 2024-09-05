@@ -1,5 +1,6 @@
 import { useLoaderData } from "react-router-dom";
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import axios from "axios";
 
 const SignIn = () => {
     const user = useLoaderData();
@@ -11,25 +12,26 @@ const SignIn = () => {
         const name = form.name.value;
         const email = form.email.value;
         const updateUser = { name, email };
-        fetch(`https://management-server-nu.vercel.app/users/${_id}`, {
-            method: 'PUT',
+        axios.put(`https://management-server-nu.vercel.app/users/${_id}`, updateUser, {
             headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(updateUser)
+                'Content-Type': 'application/json'
+            }
         })
-            .then(res => res.json())
-            .then(data => {
+            .then(response => {
+                const data = response.data;
                 if (data.modifiedCount > 0) {
                     Swal.fire({
-                        title: 'success!',
-                        text: 'Update successfully',
+                        title: 'Success!',
+                        text: 'Update successful',
                         icon: 'success',
                         confirmButtonText: 'Cool'
-                    })
+                    });
                 }
                 console.log(data);
             })
+            .catch(error => {
+                console.error('There was an error updating the user!', error);
+            });
     }
 
     return (
